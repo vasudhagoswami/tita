@@ -8,7 +8,7 @@ RUN_CMD="tted daemon start"
 # Path to .bashrc or .profile - Extra code
 BASHRC=~/.profile
 # Remove the specific line if it exists
-sed -i '/export PATH="\$PATH:\/root\/.avail\/bin"/d' "~/.bashrc"
+sed -i '/export PATH="\$PATH:\/root\/.avail\/bin"/d' ~/.bashrc
 # Add the new line if it doesn't already exist
 grep -q 'export LD_LIBRARY_PATH=.*:/usr/local/bin/' "$BASHRC" || echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/' >> "$BASHRC"
 
