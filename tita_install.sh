@@ -152,6 +152,7 @@ tted config set --storage-size 100GB
 # Restart node
 tted daemon stop
 screen -dmS "$SC_SESSION" bash -c "$RUN_CMD"
+sleep 3
 #-------------------------
 
 rm ~/tita_install.sh
