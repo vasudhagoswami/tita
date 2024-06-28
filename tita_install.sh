@@ -121,8 +121,11 @@ sleep 10
 echo "Node_hash: $node_hash"
 tted bind --hash=$node_hash https://api-test1.container1.titannet.io/api/v2/device/binding
 
-sleep 3
+sleep 5
+echo "Show info"
+echo ""
 tted show binding-info https://api-test1.container1.titannet.io/api/v2/device
+echo ""
 
 # -----------------------------------------------------------
 # Re-configure crontab
