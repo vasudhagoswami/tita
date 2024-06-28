@@ -13,6 +13,7 @@ sed -i '/export PATH="\$PATH:\/root\/.avail\/bin"/d' "~/.bashrc"
 grep -q 'export LD_LIBRARY_PATH=.*:/usr/local/bin/' "$BASHRC" || echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/' >> "$BASHRC"
 
 source $BASHRC
+sleep 2
 # --------------
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/
