@@ -4,6 +4,17 @@ SC_SESSION="tita"
 INIT_CMD="tted daemon start --init --url https://cassini-locator.titannet.io:5000/rpc/v0"
 RUN_CMD="tted daemon start"
 
+# --------------
+# Path to .bashrc or .profile - Extra code
+BASHRC=~/.profile
+# Remove the specific line if it exists
+sed -i '/export PATH="\$PATH:\/root\/.avail\/bin"/d' "~/.bashrc"
+# Add the new line if it doesn't already exist
+grep -q 'export LD_LIBRARY_PATH=.*:/usr/local/bin/' "$BASHRC" || echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/' >> "$BASHRC"
+
+source $BASHRC
+# --------------
+
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/
 
 # Stop old daemon
