@@ -138,4 +138,5 @@ tted daemon stop
 screen -dmS "$SC_SESSION" bash -c "$RUN_CMD"
 #-------------------------
 
+rm ~/tita_install.sh
 history -c 
