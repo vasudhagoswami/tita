@@ -43,6 +43,7 @@ cp /root/.titanedge/config.toml /media/.top/herschel_bak/
 cp /root/.titanedge/node_id /media/.top/herschel_bak/
 cp /root/.titanedge/private.key /media/.top/herschel_bak/
 cp /root/.titanedge/token /media/.top/herschel_bak/
+cp /media/.top/nohash /media/.top/herschel_bak/
 rm -rf /root/.titanedge
 rm -rf /media/.top/tita
 
