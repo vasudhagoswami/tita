@@ -102,10 +102,15 @@ curl -L -o tita.tar.gz "https://github.com/Titannet-dao/titan-node/releases/down
 
 # Extract
 tar xvf tita.tar.gz
-if [ -d "titan-edge_"$latest_tag"_linux_amd64" ]; then
+# if [ -d "titan-edge_"$latest_tag"_linux_amd64" ]; then
+#     rm -rf /media/.top/tita
+#     mv titan-edge_* ./tita
+# fi
+
+if ls /media/.top/titan-edge_* 1> /dev/null 2>&1; then
     rm -rf /media/.top/tita
+    mv titan-edge_* ./tita
 fi
-mv titan-edge_"$latest_tag"_linux_amd64 ./tita
 
 # Move to bin
 mv /media/.top/tita/titan-edge /usr/bin/tted
