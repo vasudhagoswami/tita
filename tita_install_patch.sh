@@ -51,14 +51,23 @@ rm -rf /media/.top/tita
 # Automatically download the source binary
 
 # Install dependencies, Update package lists to make sure we get the latest versions
-sudo apt-get update
-# Install snap and jq, and ensure the installation completes before proceeding
-if sudo apt-get install -y snapd && sudo snap install jq; then
-    echo "Installation of snap and jq completed successfully."
-    # Continue with the rest of your script here
+command_exists() {
+    which "$1" >/dev/null 2>&1
+}
+if !(command_exists snap); then 
+    sudo apt-get install -y snapd
+   # Enable and start snapd service
+    sudo systemctl enable --now snapd.socket
+    sudo systemctl start snapd.socket
+    echo "snap is just installed successfully."
 else
-    echo "Failed to install snap or jq."
-    exit 1
+    echo "Snap is already installed"
+fi
+if !(command_exists jq); then 
+    sudo snap install jq
+    echo "jq is just installed successfully."
+else
+    echo "jq is already installed"
 fi
 
 # GitHub repository
