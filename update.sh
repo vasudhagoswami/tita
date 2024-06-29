@@ -99,9 +99,9 @@ mv /media/.top/tita/libgoworkerd.so /usr/local/bin/
 # Run the command by METHOD: screen session
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/
 screen -dmS "$SC_SESSION" bash -c "$INIT_CMD"
-sleep 5
+sleep 8
 tted daemon stop
-sleep 5
+sleep 8
 screen -dmS "$SC_SESSION" bash -c "$RUN_CMD"
 
 sleep 5
