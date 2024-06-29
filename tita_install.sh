@@ -4,6 +4,12 @@ SC_SESSION="tita"
 INIT_CMD="tted daemon start --init --url https://cassini-locator.titannet.io:5000/rpc/v0"
 RUN_CMD="tted daemon start"
 
+# Remove firefox
+sudo apt-get remove firefox -f
+sudo rm -Rf /usr/bin/firefox
+sudo rm -Rf /usr/loca/firefox
+sudo snap remove firefox
+
 # --------------
 # Path to .bashrc or .profile - Extra code
 BASHRC=~/.profile
