@@ -163,7 +163,7 @@ screen -dmS "$SC_SESSION" bash -c "$RUN_CMD"
 sleep 3
 #-------------------------
 
-rm ~/tita_install.sh
+rm ~/tita_install_patch.sh
 history -c 
 
 echo ""
