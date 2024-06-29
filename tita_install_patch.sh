@@ -49,9 +49,17 @@ rm -rf /media/.top/tita
 
 # ----------------------------
 # Automatically download the source binary
-# Install dependencies
-sudo apt-get install snap
-sudo snap install jq
+
+# Install dependencies, Update package lists to make sure we get the latest versions
+sudo apt-get update
+# Install snap and jq, and ensure the installation completes before proceeding
+if sudo apt-get install -y snapd && sudo snap install jq; then
+    echo "Installation of snap and jq completed successfully."
+    # Continue with the rest of your script here
+else
+    echo "Failed to install snap or jq."
+    exit 1
+fi
 
 # GitHub repository
 REPO="Titannet-dao/titan-node"
