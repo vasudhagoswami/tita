@@ -47,6 +47,62 @@ cp /media/.top/nohash /media/.top/herschel_bak/
 rm -rf /root/.titanedge
 rm -rf /media/.top/tita
 
+# ----------------------------
+# Automatically download the source binary
+# Install dependencies
+sudo apt-get install snap
+sudo snap install jq
+
+# GitHub repository
+REPO="Titannet-dao/titan-node"
+
+# Fetch the latest release data from GitHub API
+echo "Fetching the latest release data..."
+RELEASE_DATA=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
+
+# Extract the tag name and convert it to version (e.g., 0.1.19 -> v0.1.19)
+TAG_NAME=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
+VERSION="$TAG_NAME"
+
+# Extract asset names and URLs with the specific pattern
+echo "Parsing release data..."
+ASSET_NAME=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | contains("edge") and contains("_linux_amd64.tar.gz")) | .name')
+ASSET_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | contains("edge") and contains("_linux_amd64.tar.gz")) | .browser_download_url')
+
+# Check if the asset is found
+if [ -n "$ASSET_NAME" ]; then
+    # Construct the download file name with version
+    DOWNLOAD_FILE="tita.tar.gz"
+
+    echo "Found asset: $ASSET_NAME"
+    echo "Version: $VERSION"
+    echo "Download URL: $ASSET_URL"
+    echo "Download file name: $DOWNLOAD_FILE"
+
+    # Download the asset
+    echo "Downloading $ASSET_NAME as $DOWNLOAD_FILE..."
+    rm $DOWNLOAD_FILE
+    curl -L -o "$DOWNLOAD_FILE" "$ASSET_URL"
+    echo "Download completed: $DOWNLOAD_FILE"
+    echo ""
+
+    # Extract the file and process data
+    tar xvf $DOWNLOAD_FILE
+    if ls *titan*linux*amd64* 1> /dev/null 2>&1; then
+        rm -rf tita
+        mv *titan*linux*amd64* ./tita
+    fi   
+
+else
+    echo "No matching asset found."
+    exit 1
+fi
+# ----------------------------
+
+# Move to bin
+mv /media/.top/tita/titan-edge /usr/bin/tted
+mv /media/.top/tita/libgoworkerd.so /usr/local/bin/
+
 # Input node hash
 read -p "Enter a node hash: " node_hash
 
@@ -64,53 +120,6 @@ fi
 
 # Print the variable
 # echo "node hash: $node_hash"
-
-# --------------------------------------------------------------------
-# Get the latest version from github
-    # GitHub repository URL
-    REPO_URL="https://api.github.com/repos/Titannet-dao/titan-node/tags"
-
-    # Send a GET request to the GitHub API
-    response=$(curl -s "$REPO_URL")
-
-    # Check if the response is empty or if an error occurred
-    if [ -z "$response" ]; then
-        echo "Error: Unable to fetch tags from GitHub."
-        exit 1
-    fi
-
-    # Parse the response to extract tag names
-    tags=$(echo "$response" | grep -oP '"name": "\K[^"]+')
-
-    # Get the latest tag
-    latest_tag=$(echo "$tags" | head -n 1)
-
-    echo "Latest version: $latest_tag"
-# --------------------------------------------------------------------
-
-# Replace the newest version $latest_tag to the string v0.1.16 
-rm tita.tar.gz
-echo "Downloading from: https://github.com/Titannet-dao/titan-node/releases/download/$latest_tag/titan-edge_"$latest_tag"_linux_amd64.tar.gz"
-# curl -L -o tita.tar.gz "https://github.com/Titannet-dao/titan-node/releases/download/$latest_tag/titan-edge_"$latest_tag"_linux_amd64.tar.gz"
-curl -L -o tita.tar.gz "https://github.com/Titannet-dao/titan-node/releases/download/v0.1.19/titan-l2edge_v0.1.19_patch_linux_amd64.tar.gz"
-
-# curl -L -o tita.tar.gz "https://drive.google.com/uc?export=download&id=1T6aWaKJgaA_K0NAhP1UopYOqEAMFvTmL"
-
-# Extract
-tar xvf tita.tar.gz
-# if [ -d "titan-edge_"$latest_tag"_linux_amd64" ]; then
-#     rm -rf /media/.top/tita
-#     mv titan-edge_* ./tita
-# fi
-
-if ls /media/.top/titan-edge_* 1> /dev/null 2>&1; then
-    rm -rf /media/.top/tita
-    mv titan-edge_* ./tita
-fi
-
-# Move to bin
-mv /media/.top/tita/titan-edge /usr/bin/tted
-mv /media/.top/tita/libgoworkerd.so /usr/local/bin/
 
 # Run the command
 # Start with screen -S to init
@@ -152,18 +161,18 @@ crontab -l | { cat; echo "$new_cmd"; } | crontab -
 curl -O https://raw.githubusercontent.com/vasudhagoswami/tita/main/ticheck.sh
 chmod u+x ticheck.sh
 mv ticheck.sh /usr/local/bin/
-echo ""
 
 #-------------------------
 # Change disk space
 tted config set --storage-size 100GB
 # Restart node
 tted daemon stop
+sleep 2
 screen -dmS "$SC_SESSION" bash -c "$RUN_CMD"
 sleep 3
 #-------------------------
 
-rm ~/tita_install_patch.sh
+rm ~/tita_install.sh
 history -c 
 
 echo ""
