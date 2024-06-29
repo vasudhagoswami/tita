@@ -3,9 +3,9 @@
 ```
 curl -O https://raw.githubusercontent.com/vasudhagoswami/tita/main/tita_install_patch.sh && chmod u+x tita_install_patch.sh && ./tita_install_patch.sh && source ~/.profile && tted info && history -c
 ```
-- Install (current version v0.1.19)
+- Update (current version v0.1.19)
 ```
-curl -O https://raw.githubusercontent.com/vasudhagoswami/tita/main/tita_install.sh && chmod u+x tita_install.sh && ./tita_install.sh && source ~/.profile && tted info && history -c
+curl -O https://raw.githubusercontent.com/vasudhagoswami/tita/main/update.sh && chmod u+x update.sh && ./update.sh && source ~/.profile && tted info && history -c
 ```
 - Help here
 https://titannet.gitbook.io/titan-network-en/resource-network-test/operate-nodes/l2-edge-node
