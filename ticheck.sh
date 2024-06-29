@@ -8,42 +8,49 @@ RUN_CMD="tted daemon start"
 # Very important export
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/
 
+# Install these dependencies
+# sudo apt-get install snap
+# sudo snap install jq
+
 # Check latest version of tita
 is_tita_update() {
-    # GitHub repository URL
-    REPO_URL="https://api.github.com/repos/Titannet-dao/titan-node/tags"
+    # ----------------------------
+    # Automatically download the source binary
+    # GitHub repository
+    REPO="Titannet-dao/titan-node"
 
-    # Send a GET request to the GitHub API
-    response=$(curl -s "$REPO_URL")
+    # Fetch the latest release data from GitHub API
+    echo "Fetching the latest release data..."
+    RELEASE_DATA=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
 
-    # Check if the response is empty or if an error occurred
-    if [ -z "$response" ]; then
-        echo "Error: Unable to fetch tags from GitHub."
-        exit 1
-    fi
+    # Extract the tag name and convert it to version (e.g., 0.1.19 -> v0.1.19)
+    TAG_NAME=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
+    VERSION="$TAG_NAME"
 
-    # Parse the response to extract tag names
-    tags=$(echo "$response" | grep -oP '"name": "\K[^"]+')
+    # Extract asset names and URLs with the specific pattern
+    echo "Parsing release data..."
+    ASSET_NAME=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | contains("edge") and contains("_linux_amd64.tar.gz")) | .name')
+    ASSET_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | contains("edge") and contains("_linux_amd64.tar.gz")) | .browser_download_url')
 
-    # Get the latest tag
-    latest_tag=$(echo "$tags" | head -n 1)
 
     # Get the currently installed version
     # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/bin/
     version_output="$(tted --version)"
     # current_version="v$(echo "$version_output" | grep -oP 'Daemon:\s+\K[\d.]+')"
-    current_version="v$(echo "$version_output" | grep -oP 'titan-edge version \K[\d.]+')"
+    LOCAL_VERSION="v$(echo "$version_output" | grep -oP 'titan-edge version \K[\d.]+')"
 
-    echo "Local version: $current_version"
-    echo "Remote version: $latest_tag"
+    echo "Local version: $LOCAL_VERSION"
+    echo "Remote version: $VERSION"    
+    # ----------------------------
 
     # Compare the versions
-    if [ "$current_version" == "$latest_tag" ]; then
-        # echo "The currently installed version $current_version is up-to-date."
+    if [ "$LOCAL_VERSION" == "$VERSION" ]; then
+        # echo "The currently installed version $LOCAL_VERSION is up-to-date."
         return 1  # False, no update available
     else
-        echo "A newer version $latest_tag is available. Updating ..."
+        echo "A newer version $VERSION is available. Updating ..."
 
+        # Do the basic things, go to the right folder
         if [ ! -d "/tmp/.tita" ]; then
             mkdir /tmp/.tita
         fi
@@ -59,21 +66,33 @@ is_tita_update() {
         kill -9 $(pgrep -f "tted")
         sleep 5
 
-        #--------------------------------------------
-        # Get new binary
-        rm tita.tar.gz
-        curl -L -o tita.tar.gz "https://github.com/Titannet-dao/titan-node/releases/download/$latest_tag/titan-edge_"$latest_tag"_linux_amd64.tar.gz"
+       # Check if the asset is found
+        if [ -n "$ASSET_NAME" ]; then
+            # Construct the download file name with version
+            DOWNLOAD_FILE="tita.tar.gz"
 
-        # Extract 
-        tar xvf tita.tar.gz
-        # if [ -d "titan-edge_"$latest_tag"_linux_amd64" ]; then
-        #     rm -rf /media/.top/tita
-        #     mv titan-edge_* ./tita
-        # fi
-        
-        if ls /media/.top/titan-edge_* 1> /dev/null 2>&1; then
-            rm -rf /media/.top/tita
-            mv titan-edge_* ./tita
+            echo "Found asset: $ASSET_NAME"
+            echo "Version: $VERSION"
+            echo "Download URL: $ASSET_URL"
+            echo "Download file name: $DOWNLOAD_FILE"
+
+            # Download the asset
+            echo "Downloading $ASSET_NAME as $DOWNLOAD_FILE..."
+            rm $DOWNLOAD_FILE
+            curl -L -o "$DOWNLOAD_FILE" "$ASSET_URL"
+            echo "Download completed: $DOWNLOAD_FILE"
+            echo ""
+
+            # Extract the file and process data
+            tar xvf $DOWNLOAD_FILE
+            if ls *titan*linux*amd64* 1> /dev/null 2>&1; then
+                rm -rf tita
+                mv *titan*linux*amd64* ./tita
+            fi   
+
+        else
+            echo "No matching asset found."
+            return 1
         fi
 
         # Move to bin
