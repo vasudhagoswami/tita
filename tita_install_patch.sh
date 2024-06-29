@@ -51,6 +51,8 @@ rm -rf /media/.top/tita
 # Automatically download the source binary
 
 # Install dependencies, Update package lists to make sure we get the latest versions
+sudo apt-get update
+# Install snap and jq, and ensure the installation completes before proceeding
 command_exists() {
     which "$1" >/dev/null 2>&1
 }
@@ -189,7 +191,7 @@ screen -dmS "$SC_SESSION" bash -c "$RUN_CMD"
 sleep 3
 #-------------------------
 
-rm ~/tita_install.sh
+rm ~/tita_install_patch.sh
 history -c 
 
 echo ""
