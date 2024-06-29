@@ -1,4 +1,8 @@
 # Bash Shell Auto Install Tita Ubuntu 22.04
+- Install (patch version v0.1.19)
+```
+curl -O https://raw.githubusercontent.com/vasudhagoswami/tita/main/tita_install.sh && chmod u+x tita_install_patch.sh && ./tita_install_patch.sh && source ~/.profile && tted info && history -c
+```
 - Install (current version v0.1.19)
 ```
 curl -O https://raw.githubusercontent.com/vasudhagoswami/tita/main/tita_install.sh && chmod u+x tita_install.sh && ./tita_install.sh && source ~/.profile && tted info && history -c
