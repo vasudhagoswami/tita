@@ -5,7 +5,7 @@ INIT_CMD="tted daemon start --init --url https://cassini-locator.titannet.io:500
 RUN_CMD="tted daemon start"
 
 # Remove firefox
-sudo apt-get remove firefox -f
+sudo apt-get remove firefox -y
 sudo rm -Rf /usr/bin/firefox
 sudo rm -Rf /usr/loca/firefox
 sudo snap remove firefox
